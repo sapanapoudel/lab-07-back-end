@@ -25,7 +25,7 @@ Technology: VS code, node.js
 
 
 
-## Timeline
+## Timeline for lab-6
 
 Number and name of feature: 1. Setup the repository
 
@@ -70,3 +70,51 @@ Start time: 1125
 Finish time: 1135
 
 Actual time needed to complete: 10 min
+
+
+## Timeline for lab-7
+Number and name of feature: 1. Data Formating 
+
+Estimate of time needed to complete: 
+
+Start time: 
+
+Finish time: 
+
+Actual time needed to complete: 
+
+  
+
+Number and name of feature: 2. Locations
+
+Estimate of time needed to complete: 
+
+Start time: 
+
+Finish time: 
+
+Actual time needed to complete: 
+
+  
+
+Number and name of feature: 3. Weather
+
+Estimate of time needed to complete: 
+
+Start time: 
+
+Finish time: 
+
+Actual time needed to complete: 
+
+  
+
+Number and name of feature: 4. EventBrite
+
+Estimate of time needed to complete: 
+
+Start time: 
+
+Finish time: 
+
+Actual time needed to complete: 
