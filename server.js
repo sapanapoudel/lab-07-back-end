@@ -6,7 +6,7 @@ const express = require('express');
 const cors = require('cors');
 
 // Globals
-const PORT = process.env.PORT;
+const PORT = 3000;
 
 // Make the server
 const app = express();
@@ -35,10 +35,6 @@ app.get('/weather', (request, response) => {
   }
 });
 
-// app.use('*', (request, response) => {
-//   response.send('you got to the wrong place');
-// });
-
 function Location(name, formatted, lat, lng) {
   this.search_query = name;
   this.formatted_query = formatted;
@@ -58,21 +54,20 @@ function searchToLatLng(locationName) {
   return location;
 }
 
-function Day(forecast, time) {
-  this.forecast = forecast;
-  this.time = time;
+function Weather(weatherData) {
+  this.forecast = weatherData.summary;
+  let weatherTime = weatherData.time * 1000;
+  this.date = new Date(weatherTime).toDateString();
 }
 
 function getWeatherRoute(locationName) {
   const weatherData = require('./data/darksky.json');
-  let retArr = [];
-  let time;
-  for (let el of weatherData.daily.data) {
-    time = new Date(el.time*1000).toDateString();
-    retArr.push(new Day (el.summary, time));
-  }
-  return retArr;
+
+  return weatherData.daily.data.map((el )=>
+    new Weather(el)
+  )
 }
+
 
 // Start the server.
 app.listen(PORT, () => {
