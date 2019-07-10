@@ -14,17 +14,9 @@ app.use(cors());
 
 // Location Route
 app.get('/location', searchToLatLng);
-
 // Weather Route
-app.get('/weather', (request, response) => {
-  try {
-    const weatherData = getWeatherRoute(request.query.data);
-    response.send(weatherData);
-  }
-  catch (e) {
-    response.status(500).send('Status 500, not functional.');
-  }
-});
+app.get('/weather', getWeatherRoute);
+
 app.get('/',(request,response) =>{
   try{
     response.send('server live');
@@ -71,6 +63,7 @@ function Weather(weatherData) {
 
 function getWeatherRoute(request,response) {
   const locationName = request.query.data
+  console.log(request.query);
   const url = process.env.WEATHER_API_KEY;
   superagent.get(url).then(result => {
     let daysWeather = result.body.daily.data.map((el )=>
