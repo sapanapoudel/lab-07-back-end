@@ -67,7 +67,7 @@ function searchToLatLng(locationName) {
 function Weather(weatherData) {
   this.forecast = weatherData.summary;
   let weatherTime = weatherData.time * 1000;
-  this.date = new Date(weatherTime).toDateString();
+  this.time = new Date(weatherTime).toDateString();
 }
 
 function getWeatherRoute(locationName) {
