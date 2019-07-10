@@ -4,7 +4,7 @@ require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
-//New Commit
+const superagent = require('superagent')
 // Globals
 const PORT = process.env.PORT || 3000;
 
@@ -13,16 +13,7 @@ const app = express();
 app.use(cors());
 
 // Location Route
-app.get('/location', (request, response) => {
-  // console.log(request.query.data);
-  try {
-    const locationData = searchToLatLng(request.query.data);
-    response.send(locationData);
-  }
-  catch (e) {
-    response.status(500).send('Status 500, not functional.');
-  }
-});
+app.get('/location', searchToLatLng);
 
 // Weather Route
 app.get('/weather', (request, response) => {
@@ -53,15 +44,22 @@ function Location(name, formatted, lat, lng) {
 }
 
 
-function searchToLatLng(locationName) {
-  const geoData = require('./data/geo.json');
-  let location = new Location(
-    locationName,
-    geoData.results[0].formatted_address,
-    geoData.results[0].geometry.location.lat,
-    geoData.results[0].geometry.location.lng
-  );
-  return location;
+function searchToLatLng(request,response) {
+  const locationName = request.query.data
+  const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${locationName}&key=${process.env.GEOCODE_API_KEY}`;
+  // const geoData = require('./data/geo.json');
+  superagent.get(url).then(result => {
+    let location = new Location(
+      locationName,
+      result.body.results[0].formatted_address,
+      result.body.results[0].geometry.location.lat,
+      result.body.results[0].geometry.location.lng
+    );
+    response.send(location);
+  }).catch(e =>{
+    console.error(e);
+    response.status(500).send('Status 500, not functional.');
+  })
 }
 
 function Weather(weatherData) {
