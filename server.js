@@ -4,7 +4,7 @@ require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
-
+//New Commit
 // Globals
 const PORT = process.env.PORT || 3000;
 
@@ -34,6 +34,16 @@ app.get('/weather', (request, response) => {
     response.status(500).send('Status 500, not functional.');
   }
 });
+app.get('/',(request,response) =>{
+  try{
+    response.send('server live');
+  }catch(e){
+    response.status(500).send('Status 500, not functional.');
+  }
+});
+app.use('*',(request,response)=>{
+  response.send('you got to the wrong place')
+})
 
 function Location(name, formatted, lat, lng) {
   this.search_query = name;
