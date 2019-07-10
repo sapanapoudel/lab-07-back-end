@@ -56,6 +56,7 @@ function searchToLatLng(request,response) {
       result.body.results[0].geometry.location.lng
     );
     response.send(location);
+    console.log(location);
   }).catch(e =>{
     console.error(e);
     response.status(500).send('Status 500, not functional.');
@@ -68,12 +69,15 @@ function Weather(weatherData) {
   this.time = new Date(weatherTime).toDateString();
 }
 
-function getWeatherRoute(locationName) {
-  const weatherData = require('./data/darksky.json');
-
-  return weatherData.daily.data.map((el )=>
-    new Weather(el)
-  )
+function getWeatherRoute(request,response) {
+  const locationName = request.query.data
+  const url = process.env.WEATHER_API_KEY;
+  superagent.get(url).then(result => {
+    let daysWeather = result.body.daily.data.map((el )=>
+      new Weather(el)
+    )
+    response.send(daysWeather)
+  })
 }
 
 
