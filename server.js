@@ -62,6 +62,7 @@ function Weather(weatherData) {
 }
 
 function getWeatherRoute(request,response) {
+  // eslint-disable-next-line no-unused-vars
   const locationName = request.query.data
   console.log(request.query);
   const url = process.env.WEATHER_API_KEY;
@@ -70,6 +71,7 @@ function getWeatherRoute(request,response) {
       new Weather(el)
     )
     response.send(daysWeather)
+    console.log(daysWeather);
   })
 }
 
