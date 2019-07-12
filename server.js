@@ -16,67 +16,84 @@ app.use(cors());
 app.get('/location', searchToLatLng);
 // Weather Route
 app.get('/weather', getWeatherRoute);
+//Event Route
+app.get('/events', getEventRoute);
 
-app.get('/',(request,response) =>{
-  try{
-    response.send('server live');
-  }catch(e){
-    response.status(500).send('Status 500, not functional.');
-  }
-});
-app.use('*',(request,response)=>{
-  response.send('you got to the wrong place')
-})
+app.use('*', (request, response) => response.send('you got to the wrong place'));
 
-function Location(name, formatted, lat, lng) {
-  this.search_query = name;
-  this.formatted_query = formatted;
-  this.latitude = lat;
-  this.longitude = lng;
+//==================Location Route=================================
+function Location(query, result) {
+  this.search_query = query,
+  //console.log(result.body);
+  this.formatted_query = result.body.results[0].formatted_address,
+
+  this.latitude = result.body.results[0].geometry.location.lat,
+  this.longitude = result.body.results[0].geometry.location.lng;
 }
-
 
 function searchToLatLng(request,response) {
   const locationName = request.query.data
   const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${locationName}&key=${process.env.GEOCODE_API_KEY}`;
-  // const geoData = require('./data/geo.json');
   superagent.get(url).then(result => {
-    let location = new Location(
-      locationName,
-      result.body.results[0].formatted_address,
-      result.body.results[0].geometry.location.lat,
-      result.body.results[0].geometry.location.lng
-    );
+    let location = new Location(locationName, result);
     response.send(location);
-    console.log(location);
+    // response.send(new Location(locationName, result));
+    // console.log(location);
+  }).catch(e =>{
+    console.error(e);
+    response.status(500).send('Status 500, not functional.');
+  });
+}
+
+//===========Weather Route======================================
+function Weather(weatherData) {
+  this.forecast = weatherData.summary;
+  let time  = new Date(weatherData.time*1000).toDateString();
+  this.time = time;
+}
+
+function getWeatherRoute(request,response) {
+  const weatherData = request.query.data;
+  const url = `https://api.darksky.net/forecast/${process.env.WEATHER_API_KEY}/${weatherData.latitude},${weatherData.longitude}`;
+  superagent.get(url).then(result => {
+    let daysWeather = result.body.daily.data.map((el )=> {
+      return new Weather(el)
+    });
+    response.send(daysWeather);
   }).catch(e =>{
     console.error(e);
     response.status(500).send('Status 500, not functional.');
   })
 }
 
-function Weather(weatherData) {
-  this.forecast = weatherData.summary;
-  let weatherTime = weatherData.time * 1000;
-  this.time = new Date(weatherTime).toDateString();
+//============Eventbrite=================
+//Event constructor
+function Event (event) {
+  this.link = event.url,
+  this.name = event.name.text,
+  this.event_brite = new Date(event.start.local).toDateString(),
+  this.summary = event.summary;
 }
 
-function getWeatherRoute(request,response) {
-  // eslint-disable-next-line no-unused-vars
-  const locationName = request.query.data
-  console.log(request.query);
-  const url = process.env.WEATHER_API_KEY;
+//Route function
+function getEventRoute(request, response) {
+  const eventData = request.query.data;
+
+  const url = `https://www.eventbriteapi.com/v3/events/search/?location.longitude=${eventData.longitude}&location.latitude=${eventData.latitude}&expand=venue&token=${process.env.EVENTBRITE_API_KEY}`;
+
   superagent.get(url).then(result => {
-    let daysWeather = result.body.daily.data.map((el )=>
-      new Weather(el)
-    )
-    response.send(daysWeather)
-    console.log(daysWeather);
-  })
+    let eventSummery = result.body.events.map((event) => {
+      return new Event(event);
+    });
+    response.send(eventSummery);
+    console.log(eventSummery);
+  }).catch(e =>{
+    console.error(e);
+    response.status(500).send('Status 500, not functional.');
+
+  });
 }
-
-
-// Start the server.
+//================Start the server============================
 app.listen(PORT, () => {
   console.log(`App is running on port ${PORT}`);
 });
