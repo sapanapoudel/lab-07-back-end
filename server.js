@@ -71,7 +71,7 @@ function getWeatherRoute(request,response) {
 function Event (event) {
   this.link = event.url,
   this.name = event.name.text,
-  this.event_brite = new Date(event.start.local).toDateString(),
+  this.event_date = new Date(event.start.local).toDateString(),
   this.summary = event.summary;
 }
 
@@ -93,7 +93,7 @@ function getEventRoute(request, response) {
 
   });
 }
-//================Start the server============================
+//================Start the server and make sure port is listening============================
 app.listen(PORT, () => {
   console.log(`App is running on port ${PORT}`);
 });
